@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>雅思单词复习 · Minimal</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="app-header">
+        <div class="brand">
+          <div class="brand-mark"></div>
+          <div class="brand-text">
+            <div class="brand-title">IELTS Vocab</div>
+            <div class="brand-subtitle">每日一点点，稳步进步</div>
+          </div>
+        </div>
+        <div class="header-stats">
+          <button class="stat-card stat-card-clickable" data-nav-target="wordsSection">
+            <div class="stat-label">已收录单词</div>
+            <div class="stat-value" id="totalWords">0</div>
+          </button>
+          <div class="stat-card">
+            <div class="stat-label">待复习</div>
+            <div class="stat-value" id="dueWords">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">已坚持天数</div>
+            <div class="stat-value" id="studyDays">0</div>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <!-- Home Section -->
+        <section id="homeSection" class="page-section active">
+          <div class="card-grid">
+            <button class="primary-card" data-nav-target="addSection">
+              <div class="card-title">今日单词</div>
+              <div class="card-desc">录入你今天要背的雅思单词</div>
+            </button>
+
+            <button class="primary-card" data-nav-target="reviewSection">
+              <div class="card-title">开始复习</div>
+              <div class="card-desc">按照遗忘曲线安排智能复习</div>
+            </button>
+
+            <div class="secondary-card checkin-card">
+              <div class="checkin-header">
+                <div>
+                  <div class="card-title">每日签到</div>
+                  <div class="card-desc">
+                    点击签到，记录你今天也有好好背单词
+                  </div>
+                </div>
+                <button id="checkinButton" class="pill-button">
+                  今日未签到
+                </button>
+              </div>
+              <div class="checkin-footer">
+                <span id="checkinMessage"></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Add Words Section -->
+        <section id="addSection" class="page-section">
+          <div class="section-header">
+            <button class="ghost-button" data-nav-target="homeSection">
+              返回首页
+            </button>
+            <h2>录入今日单词</h2>
+          </div>
+
+          <form id="addWordForm" class="card form-card">
+            <div class="form-row">
+              <div class="form-row-header">
+                <label for="wordInput">英文单词</label>
+                <button
+                  type="button"
+                  id="autoFillButton"
+                  class="ghost-button ghost-button-small"
+                >
+                  自动填充 (Gemini)
+                </button>
+              </div>
+              <input
+                id="wordInput"
+                type="text"
+                placeholder="例如：meticulous"
+                autocomplete="off"
+                required
+              />
+            </div>
+
+            <div class="form-row">
+              <label for="cnMeaning">中文释义</label>
+              <textarea
+                id="cnMeaning"
+                rows="2"
+                placeholder="一丝不苟；非常仔细"
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <label for="enMeaning">英文解释</label>
+              <textarea
+                id="enMeaning"
+                rows="2"
+                placeholder="showing great attention to detail; very careful and precise"
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <label for="phrases">常用短语（每行一个）</label>
+              <textarea
+                id="phrases"
+                rows="2"
+                placeholder="be meticulous about...\nmeticulous preparation"
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <label for="examples">例句（每行一个）</label>
+              <textarea
+                id="examples"
+                rows="3"
+                placeholder="She is always meticulous about her appearance.\nHis meticulous notes helped him achieve a high score in IELTS."
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <label for="tips">背诵技巧 / 词根词源</label>
+              <textarea
+                id="tips"
+                rows="2"
+                placeholder="来自拉丁语 meticulosus，意为“害怕的”；联想：每一件小事都要考虑到（很仔细）"
+              ></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="primary-button">保存单词</button>
+              <button type="button" id="resetForm" class="ghost-button">
+                清空表单
+              </button>
+            </div>
+
+            <p class="helper-text">
+              小贴士：目前所有内容都会保存在本机浏览器的
+              localStorage 中，安全且只对你自己可见。
+            </p>
+
+            <div class="form-row api-key-row">
+              <div class="form-row-header">
+                <label for="geminiApiKeyInput">Gemini API Key（可选）</label>
+              </div>
+              <input
+                id="geminiApiKeyInput"
+                type="password"
+                placeholder="在此填写你的 Gemini API Key，用于自动填充释义"
+                autocomplete="off"
+              />
+              <div class="form-actions api-key-actions">
+                <button
+                  type="button"
+                  id="saveGeminiKeyButton"
+                  class="ghost-button ghost-button-small"
+                >
+                  保存到本机浏览器
+                </button>
+                <span class="helper-text">
+                  Key 仅保存在本机浏览器的 localStorage 中；如果不放心，也可以每次临时填写，不点击保存。
+                </span>
+              </div>
+            </div>
+          </form>
+
+          <div class="card">
+            <div class="section-subheader">
+              <h3>最近添加的单词</h3>
+            </div>
+            <ul id="recentWordList" class="word-list"></ul>
+          </div>
+        </section>
+
+        <!-- Review Section -->
+        <section id="reviewSection" class="page-section">
+          <div class="section-header">
+            <button class="ghost-button" data-nav-target="homeSection">
+              返回首页
+            </button>
+            <h2>智能复习</h2>
+          </div>
+
+          <div class="card">
+            <div class="review-mode-row">
+              <span class="label">复习模式</span>
+              <div class="segmented-control" id="reviewModeControl">
+                <button data-mode="cnToEn" class="active">看中写英</button>
+                <button data-mode="enToCn">看英写中</button>
+                <button data-mode="defToWord">看英文解释写单词</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card review-card" id="reviewCard">
+            <div id="noDueWrapper" class="empty-state">
+              <div class="empty-title">今天没有需要复习的单词 🎉</div>
+              <div class="empty-desc">
+                可以去添加一些新单词，或明天再来看看。
+              </div>
+            </div>
+
+            <div id="reviewWrapper" class="hidden">
+              <div class="review-progress">
+                <span id="reviewCounter">0 / 0</span>
+              </div>
+
+              <div class="review-question">
+                <div class="review-label" id="reviewPromptLabel"></div>
+                <div class="review-content" id="reviewPromptContent"></div>
+              </div>
+
+              <div class="form-row">
+                <label for="reviewAnswer">你的答案</label>
+                <input
+                  id="reviewAnswer"
+                  type="text"
+                  autocomplete="off"
+                  placeholder="在这里输入..."
+                />
+              </div>
+
+              <div class="review-actions">
+                <button id="showAnswerButton" class="ghost-button">
+                  显示标准答案
+                </button>
+              </div>
+
+              <div id="answerArea" class="answer-area hidden">
+                <div class="answer-line">
+                  <span class="answer-label">单词</span>
+                  <span id="answerWord"></span>
+                </div>
+                <div class="answer-line">
+                  <span class="answer-label">中文</span>
+                  <span id="answerCn"></span>
+                </div>
+                <div class="answer-line">
+                  <span class="answer-label">英文解释</span>
+                  <span id="answerEn"></span>
+                </div>
+                <div class="answer-line">
+                  <span class="answer-label">常用短语</span>
+                  <span id="answerPhrases"></span>
+                </div>
+                <div class="answer-line">
+                  <span class="answer-label">例句</span>
+                  <span id="answerExamples"></span>
+                </div>
+                <div class="answer-line">
+                  <span class="answer-label">背诵技巧</span>
+                  <span id="answerTips"></span>
+                </div>
+
+                <div class="review-judge">
+                  <button id="markWrong" class="ghost-button destructive">
+                    没记住
+                  </button>
+                  <button id="markRight" class="primary-button">
+                    记住了
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- All Words Section -->
+        <section id="wordsSection" class="page-section">
+          <div class="section-header">
+            <button class="ghost-button" data-nav-target="homeSection">
+              返回首页
+            </button>
+            <h2>已收录单词</h2>
+          </div>
+
+          <div class="card">
+            <div class="section-subheader">
+              <h3>全部单词</h3>
+            </div>
+            <ul id="allWordList" class="word-list"></ul>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
+
